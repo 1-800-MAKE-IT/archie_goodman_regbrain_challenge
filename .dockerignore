@@ -1,0 +1,24 @@
+#NOTE - for speed purposes, this file was created with ChatGPT as it is boilerplate.
+# Ignore Git
+.git
+.gitignore
+
+# Bytecode, cache, logs
+__pycache__/
+*.pyc
+*.pyo
+*.log
+
+# Editor & OS noise
+.DS_Store
+.vscode/
+
+# Secrets (NEVER put creds in your image)
+*.env
+.env
+
+# Data - hash out for now
+#*.csv
+#*.parquet
+#*.zip
+#data/
