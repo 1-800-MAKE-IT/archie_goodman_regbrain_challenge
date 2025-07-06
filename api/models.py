@@ -5,25 +5,24 @@ from uuid import UUID
 from pydantic import BaseModel, Field, validator
 
 
-#schema for a single RegInsight 
+#schema for a single RegInsight. Created by ChatGPT as it was fairly boilerplate - just copy the data schema provided in task.
 class RegInsight(BaseModel):
-    RegInsightDocumentId: UUID
-    CUBEJurisdiction: str
-    CUBEIssuingBody: str
-    CUBEPublishedDate: datetime
-    RegOntologyId: str
-    RegInsightTextNative: str
-    # Optional fields
-    CUBEIssuingDepartment: str | None = None
-    IssuanceType: str | None = None
-    Status: str | None = None
-    RegInsightTitleNative: str | None = None
-    RegInsightSourceLink: str | None = None
+    doc_id: UUID = Field(alias="RegInsightDocumentId") #the alias is the source field on input - but a little long at times
+    jurisdiction: str = Field(alias="CUBEJurisdiction")
+    issuing_body: str = Field(alias="CUBEIssuingBody")
+    published_date: datetime = Field(alias="CUBEPublishedDate")
+    ontology_id: str = Field(alias="RegOntologyId")
+    text_native: str = Field(alias="RegInsightTextNative")
 
-    # Basic sanity check: title length
-    _title_len = validator("RegInsightTitleNative", allow_reuse=True)(
-        lambda v: v if v is None or len(v) <= 300 else v[:297] + "..."
-    )
+    # Optional fields
+    department: str | None = Field(default=None, alias="CUBEIssuingDepartment")
+    issuance_type: str | None = Field(default=None, alias="IssuanceType")
+    status: str | None = Field(default=None, alias="Status")
+    title: str | None = Field(default=None, alias="RegInsightTitleNative")
+    source_url: str | None = Field(default=None, alias="RegInsightSourceLink")
 
     class Config:
+        # Auto-strip whitespace from all string fields
         anystr_strip_whitespace = True
+        # Allow instantiating from source fields (aliases)
+        allow_population_by_field_name = False

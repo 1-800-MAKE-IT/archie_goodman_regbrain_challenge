@@ -1,21 +1,25 @@
-#NOTE - for speed purposes, this file was created with ChatGPT as it is boilerplate.
+#this file was created by chatgpt 
+# ---------- base image ----------
 FROM python:3.10-slim
 
-# Set up work directory
+# ---------- workdir ----------
 WORKDIR /app
 
-# Install system deps
-RUN apt-get update && apt-get install -y \
-    build-essential \
-    curl \
+# ---------- OS packages ----------
+RUN apt-get update && apt-get install -y --no-install-recommends \
+        build-essential \
+        curl \
     && rm -rf /var/lib/apt/lists/*
 
-# Install Python dependencies
+# ---------- Python deps ----------
 COPY requirements.txt .
 RUN pip install --upgrade pip && pip install -r requirements.txt
 
-# Copy source code
+# ---------- project code ----------
 COPY . .
 
-# Default command
-CMD [ "bash" ]
+# ---------- expose dev ports ----------
+EXPOSE 8501 8000
+
+# ---------- default cmd ----------
+CMD ["bash"]

@@ -1,0 +1,15 @@
+1. Ingestion - purpose is to ingest CSV data into PG table, and clean data.
+data validation with pydantic model - all inherit from one model to prevent data drift
+run regularly with cronjob for now - later use Pub/Sub + Cloud Function for event driven ingestion
+batch ingestion, for scalability (deal with memory constraints, and parallelism-ready)
+won't add logging for this MVP but batching would help that too, could log where it goes wrong
+secrets - using .env for now, would use GCP Secrets Manager for Prod.
+(ON DOC ID CONFLICT DO NOTHING) - 
+
+2. Embedding
+
+3. Cosine Similarity Calculation
+
+4. Alerting Logic
+
+5. Streamlit Frontend

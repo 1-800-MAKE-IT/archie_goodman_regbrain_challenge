@@ -1,0 +1,39 @@
+┌─────────────────────────────────────────────┐
+│ data/cube_data.csv (raw)                    │
+└─────────────────────────────────────────────┘
+                 │
+                 ▼
+┌──────────────────────────────────────────────────┐
+│ ingest.py                                        │
+│  • validate via Pydantic                         │
+│  • strip HTML + sanity checks                    │
+│  • INSERT rows into reginsights_clean            │
+│    (embedding = NULL)                            │
+└──────────────────────────────────────────────────┘
+                 │
+                 ▼  (daily job)
+┌──────────────────────────────────────────────────┐
+│ embed.py                                         │
+│  • SELECT * FROM reginsights_clean              │
+│      WHERE embedding IS NULL LIMIT batch_size    │
+│  • compute SBERT vectors                         │
+│  • UPDATE reginsights_clean SET embedding = ...  │
+└──────────────────────────────────────────────────┘
+                 │
+                 ▼
+┌──────────────────────────────────────────────────┐
+│ similarity.py                                    │
+│  • aggregate by (ontology, jurisdiction, quarter)│
+│  • cosine similarity                              │
+│  • INSERT/UPDATE similarities table               │
+└──────────────────────────────────────────────────┘
+                 │
+                 ▼
+┌──────────────────────────────────────────────────┐
+│ alerting.py                                      │
+│  • read similarities                             │
+│  • Δ threshold logic → INSERT alerts table        │
+└──────────────────────────────────────────────────┘
+                 │
+                 ▼
+ FastAPI (GET /meta, /trends, /alerts)  ← Streamlit UI calls
