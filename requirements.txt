@@ -1,8 +1,12 @@
+openai
 pandas
 numpy
 scikit-learn
 spacy
-sentence-transformers
+torch
+transformers
 pgvector
+sqlalchemy
 psycopg2-binary
 streamlit
+pydantic
