@@ -1,0 +1,8 @@
+pandas
+numpy
+scikit-learn
+spacy
+sentence-transformers
+pgvector
+psycopg2-binary
+streamlit
