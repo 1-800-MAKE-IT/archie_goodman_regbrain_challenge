@@ -13,7 +13,11 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 
 # ---------- Python deps ----------
 COPY requirements.txt .
-RUN pip install --upgrade pip && pip install -r requirements.txt
+
+# Force CPU-only PyTorch
+ENV PIP_EXTRA_INDEX_URL="https://download.pytorch.org/whl/cpu"
+
+RUN pip install --upgrade pip && pip install --no-cache-dir -r requirements.txt
 
 # ---------- project code ----------
 COPY . .

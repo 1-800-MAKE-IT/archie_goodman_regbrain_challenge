@@ -1,24 +1,17 @@
-#NOTE - for speed purposes, this file was created with ChatGPT as it is boilerplate.
-# Ignore Git
-.git
-.gitignore
-
-# Bytecode, cache, logs
+# Exclude large files/folders from Docker build context
 __pycache__/
 *.pyc
-*.pyo
-*.log
-
-# Editor & OS noise
-.DS_Store
-.vscode/
-
-# Secrets (NEVER put creds in your image)
-*.env
+.git/
 .env
-
-# Data - hash out for now
-#*.csv
-#*.parquet
-#*.zip
-#data/
+.vscode/
+*.db
+/data/
+node_modules/
+.pytest_cache/
+*.log
+*.tmp
+.DS_Store
+# Exclude any large data files
+*.csv
+*.json
+*.parquet

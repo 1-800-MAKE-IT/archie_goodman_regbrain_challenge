@@ -1,13 +1,25 @@
-openai
+# Core data processing
 pandas
 numpy
-scikit-learn
-spacy
-torch
-transformers
-pgvector
+
+# Database
 sqlalchemy
 psycopg2-binary
+
+# Web framework
 streamlit
+fastapi
+uvicorn
+
+# Data validation
 pydantic
-bs4
+
+# HTML parsing (bs4 is old name)
+beautifulsoup4
+lxml
+
+# Environment management
+python-dotenv
+
+# Embeddings (will install torch CPU-only version automatically)
+sentence-transformers

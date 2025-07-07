@@ -1,9 +1,55 @@
+# Python-related files
 __pycache__/
 *.pyc
+*.pyo
+*.pyd
+
+# Virtual environments
+.venv/
+venv/
+
+# Environment files
 .env
+.env.*
+
+# IDE settings
 .vscode/
+.idea/
+
+# Database files
 *.db
-/data
-.env
-/secrets
+*.sqlite3
+
+# Data and secrets
+/data/
+/secrets/
+/logs/
+
+# Docker-related files
 docker-compose.yml
+*.dockerfile
+
+# Temporary files
+*.log
+*.tmp
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# Large binary files
+*.tar
+*.gz
+*.zip
+*.rar
+*.7z
+*.iso
+
+# Node.js and frontend-related files (if applicable)
+node_modules/
+dist/
+build/
+
+# Ignore everything hidden
+.*
+!/.gitignore
