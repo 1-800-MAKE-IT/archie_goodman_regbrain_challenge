@@ -6,7 +6,7 @@ from __future__ import annotations
 import csv
 import logging
 from pathlib import Path
-from typing import List
+from typing import List, Generator
 from datetime import datetime, timedelta
 import psycopg2.extras
 from bs4 import BeautifulSoup
@@ -68,35 +68,16 @@ def insert_batch(rows: List[dict]):
     with db_conn() as conn, conn.cursor() as cur:
         psycopg2.extras.execute_values(cur, sql, values)
 
-def main():
-    """Load and clean batches of data into the PostgreSQL table."""
-    logging.basicConfig(level=logging.INFO, format="%(levelname)s: %(message)s")
-    
-    kept = 0
-    skipped = 0
-    batch: List[dict] = []
-
-    logging.info("Starting data ingestion.")
-
-    try:
-        # Open CSV with utf-8 encoding and ignore invalid characters
-        with open(RAW_CSV, "r", encoding="utf-8", errors="ignore") as csvfile:
-            reader = csv.DictReader(csvfile)
-            for row in reader:
-                try:
-                    # Parse date
-                    published_date = parse_date(row["CUBEPublishedDate"])
-
-                    # Clean text
-                    clean_text = strip_html(row["RegInsightTextNative"])
-
-                    # Filter texts that are too short
-                    if len(clean_text) < MIN_CHARS:
-                        logging.debug(f"Skipping short text (length: {len(clean_text)}, doc_id: {row['RegInsightDocumentId']})")
-                        skipped += 1
-                        continue
-
-                    # Add cleaned row to batch
+def read_csv_in_batches(file_path: Path, batch_size: int) -> Generator[List[dict], None, None]:
+    """Read CSV file and yield rows in batches."""
+    with open(file_path, "r", encoding="utf-8", errors="ignore") as csvfile:
+        reader = csv.DictReader(csvfile)
+        batch = []
+        for row in reader:
+            try:
+                published_date = parse_date(row["CUBEPublishedDate"])
+                clean_text = strip_html(row["RegInsightTextNative"])
+                if len(clean_text) >= MIN_CHARS:
                     batch.append(
                         {
                             "doc_id": row["RegInsightDocumentId"],
@@ -108,29 +89,30 @@ def main():
                             "clean_text": clean_text,
                         }
                     )
-                    kept += 1
-
-                    # Insert batch when size limit is reached
-                    if len(batch) >= BATCH_SIZE:
-                        insert_batch(batch)
-                        logging.info(f"Inserted batch of {len(batch)} rows (total kept: {kept}, skipped: {skipped})")
-                        batch = []  # Reset batch
-
-                except Exception as e:
-                    logging.exception(f"Unexpected error processing row: {row}. Error: {e}")
-                    skipped += 1
-                    raise e 
-
-        # Insert remaining rows from the last batch
+                if len(batch) >= batch_size:
+                    yield batch
+                    batch = []
+            except Exception as e:
+                logging.warning(f"Error processing row: {row}. Skipping. Error: {e}")
         if batch:
+            yield batch
+
+def main():
+    """Load and clean batches of data into the PostgreSQL table."""
+    logging.basicConfig(level=logging.INFO, format="%(levelname)s: %(message)s")
+    logging.info("Starting data ingestion.")
+
+    try:
+        total_kept = 0
+        for batch in read_csv_in_batches(RAW_CSV, BATCH_SIZE):
             insert_batch(batch)
-            logging.info(f"Inserted final batch of {len(batch)} rows (total kept: {kept}, skipped: {skipped})")
+            total_kept += len(batch)
+            logging.info(f"Inserted batch of {len(batch)} rows (total kept: {total_kept})")
+
+        logging.info(f"Ingestion completed. Total rows kept: {total_kept}")
 
     except Exception as e:
         logging.exception(f"An unexpected error occurred during ingestion: {e}")
-        raise e 
-    finally:
-        logging.info(f"Ingestion completed. Total rows kept: {kept}, total rows skipped: {skipped}")
 
 if __name__ == "__main__":
     main()
