@@ -4,7 +4,8 @@ run regularly with cronjob for now - later use Pub/Sub + Cloud Function for even
 batch ingestion, for scalability (deal with memory constraints, and parallelism-ready)
 won't add logging for this MVP but batching would help that too, could log where it goes wrong
 secrets - using .env for now, would use GCP Secrets Manager for Prod.
-(ON DOC ID CONFLICT DO NOTHING) - 
+(ON DOC ID CONFLICT DO NOTHING) 
+add indices to db in future to speed up retrieval 
 
 2. Embedding
 
