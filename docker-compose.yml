@@ -1,0 +1,38 @@
+#file created by Gemini
+#NOTE - I did not push this by accident, it is needed to run the project in docker as intended. this would not normally be done in prod.
+version: "3.3"
+
+services:
+  db:
+    image: ankane/pgvector
+    container_name: regbrain-db
+    environment:
+      POSTGRES_USER: reguser
+      POSTGRES_PASSWORD: regpass
+      POSTGRES_DB: regbrain
+    ports:
+      - "5432:5432"          # expose if you want psql outside compose
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: regbrain-app
+    depends_on:
+      - db
+    environment:
+      DB_HOST: db
+      DB_NAME: regbrain
+      DB_USER: reguser
+      DB_PASS: regpass
+    volumes:
+      - ./:/app              # live-mount code for hot reload
+    ports:
+      - "8501:8501"          # Streamlit UI
+      - "8000:8000"          # FastAPI
+    command: bash            # start in interactive shell for dev
+
+volumes:
+  pgdata:
