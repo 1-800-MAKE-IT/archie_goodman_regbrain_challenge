@@ -1,25 +1,13 @@
-# Core data processing
 pandas
 numpy
-
-# Database
 sqlalchemy
 psycopg2-binary
-
-# Web framework
 streamlit
 fastapi
 uvicorn
-
-# Data validation
 pydantic
-
-# HTML parsing (bs4 is old name)
 beautifulsoup4
 lxml
-
-# Environment management
 python-dotenv
-
-# Embeddings (will install torch CPU-only version automatically)
+pip install torch --index-url https://download.pytorch.org/whl/cpu
 sentence-transformers

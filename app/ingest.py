@@ -62,11 +62,7 @@ def get_embedding(text: str) -> list:
 
 def parse_date(date_str: str) -> datetime:
     """Parse date string in 'MM/DD/YYYY' format."""
-    try:
-        return datetime.strptime(date_str, "%m/%d/%Y")
-    except ValueError:
-        logging.warning(f"Invalid date format: {date_str}. Using default date.")
-        return datetime(1970, 1, 1)  # Default fallback date
+    return datetime.strptime(date_str, "%m/%d/%Y")
 
 def insert_batch(rows: List[dict]):
     #inserts a batch or rows into pg table. if there's a conflict, it just overwrites for now. suitable for the MVP
@@ -102,7 +98,7 @@ def insert_batch(rows: List[dict]):
     with db_conn() as conn, conn.cursor() as cur:
         psycopg2.extras.execute_values(cur, sql, values)
 
-
+# Modify the `read_csv_in_batches` function to preprocess the date field
 def read_csv_in_batches(file_path: Path, batch_size: int) -> Generator[List[dict], None, None]:
     """Read CSV file and yield rows in batches."""
     with open(file_path, "r", encoding="latin1") as csvfile:  
@@ -110,10 +106,12 @@ def read_csv_in_batches(file_path: Path, batch_size: int) -> Generator[List[dict
         batch = []
         for row in reader:
             try:
+                # Preprocess the date field before validation
+                published_date = parse_date(row["CUBEPublishedDate"])  # Parse once
+                row["CUBEPublishedDate"] = published_date.isoformat()  # Convert to ISO format
+
                 # Validate row data with Pydantic
                 validated_row = RegInsight(**row)
-                
-                published_date = parse_date(row["CUBEPublishedDate"])
                 clean_text = strip_html(validated_row.text_native)
                 
                 if len(clean_text) >= MIN_CHARS:
@@ -127,7 +125,7 @@ def read_csv_in_batches(file_path: Path, batch_size: int) -> Generator[List[dict
                             "ontology_id": validated_row.ontology_id,
                             "concept_names": extract_concept_names(validated_row.ontology_id),
                             "time_bucket": ten_day_bucket(published_date),
-                            "published_date": published_date.date(),
+                            "published_date": published_date.date(),  # Use the parsed datetime object
                             "title": validated_row.title,
                             "clean_text": clean_text,
                             "embedding": embedding,
