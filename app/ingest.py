@@ -1,5 +1,6 @@
 """
 This script ingests data from RegInsight data CSV file, cleans data and inserts into PG table.
+Chatgpt model used - GPT 4o
 """
 
 from __future__ import annotations
@@ -19,16 +20,16 @@ from utils.db_utils import db_conn
 RAW_CSV = Path("/workspaces/archie_goodman_regbrain_challenge/data/RegInsight_Dataset(RegInsight Data).csv")
 BATCH_SIZE: int = 200
 MIN_CHARS: int = 500
-EMBEDDING_MODEL = SentenceTransformer('all-MiniLM-L6-v2')  # Small, fast model
+EMBEDDING_MODEL = SentenceTransformer('all-MiniLM-L6-v2') 
 # ---------------------------------------- #
-
+#this function was produced with help from chatgpt
 def ten_day_bucket(date: datetime) -> str:
     """Calculate a 10-day bucket for a given date."""
     bucket_start = date - ((date.day - 1) % 10) * timedelta(days=1)
     bucket_end = bucket_start + timedelta(days=9)
     return f"{bucket_start.strftime('%Y-%m-%d')} to {bucket_end.strftime('%Y-%m-%d')}"
 
-#this function produced with help from chatgpt
+#this function was produced with help from chatgpt
 def strip_html(text: str) -> str:
     """Clean HTML content."""
     try:
@@ -99,9 +100,8 @@ def insert_batch(rows: List[dict]):
     with db_conn() as conn, conn.cursor() as cur:
         psycopg2.extras.execute_values(cur, sql, values)
 
-# Modify the `read_csv_in_batches` function to preprocess the date field
 def read_csv_in_batches(file_path: Path, batch_size: int) -> Generator[List[dict], None, None]:
-    """generator to read csv and yeild batches of rows"""
+    #generator to read csv and yeild batches of rows
     with open(file_path, "r", encoding="latin1") as csvfile:  #latin1 is a very tolerant csv encoding - change in prod? 
         reader = csv.DictReader(csvfile)
         batch = []
