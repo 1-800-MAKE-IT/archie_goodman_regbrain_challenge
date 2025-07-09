@@ -48,7 +48,7 @@ Testing:
 2. Next, you can generate a sequence of embeddings with a known sequence of cosine similarities. 
     - 1. define input sequence goal. 2. for each pair of vectors in your desired sequence: first generate a random vector. then take another random vector. linearly interpolate between the two: more for a high similarity
     and less for a lower (by scaling and adding the vectors by your similarity score). this gives you your two vectors of predifined similarity for each timestep. Could potentially train a decoder to decode these into real words.
-    - then once you have this sequence, calculate a loss function, something like cross entropy between the two sequences 
+    - then once you have this sequence, this is your ground truth so you can use a common loss function like MSE between predicted and actual 
     - not too computationally intense so likely suitable for prod. 
 3. For a more real world applicable check: Get ChatGPT to two sequences of examples with an approximately-predifined sequence of similarities (e.g. starts off at approximately x similarity, becomes y similarity and then onto z)
 4. Track the loss function between a sample of predefined sequences to track performance in prod.

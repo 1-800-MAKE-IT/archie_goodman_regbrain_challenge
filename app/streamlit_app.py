@@ -3,7 +3,7 @@ import requests
 from similarity import plot_similarity_over_time
 import pandas as pd
 
-#NOTE - entire script produced with help from chatgpt
+#NOTE - script produced with help from chatgpt
 
 # FastAPI base URL
 API_BASE_URL = "http://127.0.0.1:8000"
